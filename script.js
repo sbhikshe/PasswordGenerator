@@ -12,56 +12,57 @@ var uppercaseChars = [];
 var numericChars = [];
 var specialChars = [];
 
+/* This function prompts the user to enter a length between 8 and 128 for the password */
+/* The function returns a false if the user cancels the prompt - meaning they don't want to generate a password. */
+/* Or returns a true if a valid number [8,128] is entered. The length is set in the global passwordLength var */
 function getLength() {
+
   var userCanceled = false;
   
   do {
     /* show the user prompt to get the length input */
     passwordLength = prompt("Please enter a length between 8 and 128 characters for your password ", "33");
 
-    /* User pressed the Cancel button */
+    /* User pressed Cancel.  */
     /* set userCanceled to true, break out of this while */
     /* and return false to NOT generate password */
     if (passwordLength === null) {
       userCanceled = true;
     } else {
-      /* User entered some, and hit OK. Check if input is numeric. */
-      /* This check will not allow negative numbers either. */
+      /* User entered some input, and hit OK. Check if it is numeric. */
+      /* This check will catch the negative sign, so only positive numbers allowed. */
       console.log("passwordLength entered: " + passwordLength);
       for (var i = 0; i < passwordLength.length; i++) {
         if(passwordLength[i] < '0' || passwordLength[i] > '9') {
-          alert("Invalid length. Please enter a number between 8 and 128");
-
-          /* reset the invalid value, we don't want to leave it there */
+          alert("Invalid characters. Please enter a number between 8 and 128");
+          /* invalid input length, reset to null and repeat the while (show prompt) */
           passwordLength = null; 
-          break;
-          //return false;
+          /* break out of this for loop on the first invalid char */
+          break; 
         }
       }
   
       /* all numeric digits in input, now check if between 8 and 128 */
       if (passwordLength !== null) {
         if (passwordLength < 8 || passwordLength > 128) {
-          alert("Invalid length. Please enter a number tween 8 and 128");
-          /* reset the invalid value */
+          alert("Invalid length. Please enter a number between 8 and 128");
+          /* invalid value for length, reset to null and repeat the while (show prompt) */
           passwordLength = null; 
-          //return false;
         }
       }
     } /* end else */
   } while(!userCanceled && (passwordLength === null));
 
   if (userCanceled)
-    return false;
+    return false; /* no password generation */
   else
-    return true; /* passwordLength is global, and has the value */
+    return true; /* passwordLength (global) has a valid length value, generate password */
 }
 
 function getCharacterSetPreferences() {
   /* get the user's choices: lower, upper, numeric, and/or special */
   /* reset choice array first since this is global */
   /* we don't want to add to the choices from last time */
-
   charSetChoices = [];
   alert("Please choose atleast one of the following sets of characters to use in your password");
   if (confirm("Use lowercase characters?")) {
@@ -139,7 +140,7 @@ function initializeCharacterSets() {
   }
 
   function generatePassword() {
-    var password = [];
+    //var password = [];
 
      /* keep this local, and reset it every time */
      /* add only the char sets that were picked by the user */
@@ -182,10 +183,17 @@ function initializeCharacterSets() {
 
   // Write password to the #password input
 function writePassword() {
-  /* Do this user interaction first */
-  /* Ask for password length */
+
+  /* Initial: set up the character set arrays */
+  initializeCharacterSets();
+
+  /* reset earlier user choices if we've done this before */
+  passwordLength = null;
+  charSetChoices = [null, null, null, null];
+  password = "Your Secure Password"; /* same as the default */
+
+  /* Ask user for passwordLength */
   var isValidLength = getLength();
-  console.log("Desired length: " + passwordLength);
 
   /* if a valid length was entered, go ahead and ask for 
   character set preferences, else skip this and write the 
@@ -193,7 +201,6 @@ function writePassword() {
   if (isValidLength) {
     /* Ask for character sets to use */
     var isValidCharSet = getCharacterSetPreferences();
-    console.log(charSetChoices);
     
     /* if valid length and char set choices received, generate password.
     Else, skip this and write default text to the password box */
@@ -201,7 +208,6 @@ function writePassword() {
       /* generate password, and set passwordText to it */
       /* write to the display to show to the user, instead 
       of the default text. */
-      initializeCharacterSets();
       password = generatePassword();
     }
   } 
