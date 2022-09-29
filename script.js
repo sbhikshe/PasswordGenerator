@@ -4,6 +4,7 @@ var generateBtn = document.querySelector("#generate");
 // User entries
 var passwordLength = 0;
 var charSetChoices = [null, null, null, null];
+var password = "Your Secure Password"; /* same as the default */
 
 // Write password to the #password input
 function writePassword() {
@@ -12,12 +13,24 @@ function writePassword() {
   var isValidLength = getLength();
   console.log("Desired length: " + passwordLength);
 
-  /* Ask for character sets to use */
-  var isValidCharSet = getCharacterSetPreferences();
-  console.log(charSetChoices);
-
-  /* if valid responses, generate password */
-
+  /* if a valid length was entered, go ahead and ask for 
+  character set preferences, else skip this and write the 
+  default text to the password box. */
+  if (isValidLength) {
+    /* Ask for character sets to use */
+    var isValidCharSet = getCharacterSetPreferences();
+    console.log(charSetChoices);
+    
+    /* if valid length and char set choices received, generate password.
+    Else, skip this and write default text to the password box */
+    if (isValidCharSet) {
+      /* generate password, and set passwordText to it */
+      /* write to the display to show to the user, instead 
+      of the default text. */
+      password = generatePassword();
+    }
+  } 
+  
   /* write password to the box displayed */
   var passwordText = document.querySelector("#password");
   passwordText.value = password;
@@ -28,13 +41,39 @@ function writePassword() {
 generateBtn.addEventListener("click", writePassword);
 
 function getLength() {
+  
+  /* show the box to get the length input */
   passwordLength = prompt("Please enter a length between 8 and 128 characters for your password ", "33");
+
+  /* User pressed the Cancel button */
+  /* return false, no need to generate password */
+  if (passwordLength === null) {
+    console.log("User canceled the prompt, return silently");
+    return false;
+  }
+
+  /* User entered something, and hit OK. Check if numeric */
+  /* and no negatives either. Only positive numbers allowed. */
+  /* Not using regular expressions / string.match() */
+  for (var i = 0; i < passwordLength.length; i++) {
+    if(passwordLength[i] < '0' || passwordLength[i] > '9') {
+      /* not a digit */
+      console.log("Not a number: " + passwordLength[i] + ", return");
+      alert("Invalid length. Please enter a number between 8 and 128");
+      passwordLength = 0; /* reset the invalid value */
+      return false;
+    }
+  }
+  
+  /* got all numeric digits, now check if between 8 and 128 */
   if (passwordLength < 8 || passwordLength > 128) {
-    alert("Invalid length. Please enter a value between 8 and 128");
+    console.log("Not a valid number: " + passwordLength + ", return");
+    alert("Invalid length. Please enter a number tween 8 and 128");
     passwordLength = 0; /* reset the invalid value */
     return false;
   }
-  /* else, a valid value was set */
+
+  /* else, a valid value was set, passwordLength has the valid number */
   return true;
 }
 
