@@ -6,6 +6,12 @@ var passwordLength = 0;
 var charSetChoices = [null, null, null, null];
 var password = "Your Secure Password"; /* same as the default */
 
+// Character sets
+var lowercaseChars = [];
+var uppercaseChars = [];
+var numericChars = [];
+var specialChars = [];
+
 // Write password to the #password input
 function writePassword() {
   /* Do this user interaction first */
@@ -27,6 +33,8 @@ function writePassword() {
       /* generate password, and set passwordText to it */
       /* write to the display to show to the user, instead 
       of the default text. */
+      resetCharacterArrays();
+      setupCharacterArrays();
       password = generatePassword();
     }
   } 
@@ -102,3 +110,84 @@ function getCharacterSetPreferences() {
     return false;
   }
 }
+
+function generatePassword() {
+  var password = [];
+  var masterCharacterSet = [];
+
+  /* create master array of chars from the user preferences */
+  /* look at each char set chosen */
+  /* push all those chars into the master array */
+
+  if(charSetChoices.indexOf("lower") !== -1) {
+    masterCharacterSet = masterCharacterSet.concat(lowercaseChars);
+  }
+  if(charSetChoices.indexOf("upper") !== -1) {
+    masterCharacterSet = masterCharacterSet.concat(uppercaseChars);
+  }
+  if(charSetChoices.indexOf("numeric") !== -1) {
+    masterCharacterSet = masterCharacterSet.concat(numericChars);
+  }
+  if(charSetChoices.indexOf("special") !== -1) {
+    masterCharacterSet = masterCharacterSet.concat(specialChars);
+  }
+  console.log("masterarray: " + masterCharacterSet);
+
+  var randomCharIndex;
+  password = ""; /* reset the string if it was previously generated */
+  for (var i = 0; i < passwordLength; i++) {
+    /* get a random character from master array */
+    /* stick it in the password */
+    randomCharIndex = Math.floor(Math.random() * masterCharacterSet.length);
+    password += masterCharacterSet[randomCharIndex];
+  }
+
+  console.log("Password: " + password);
+
+  return password;
+}
+
+function resetCharacterArrays() {
+  lowercaseChars = [];
+  uppercaseChars = [];
+  numericChars = [];
+  specialChars = [];
+}
+
+function setupCharacterArrays() {
+    var c;
+
+    /* uppercase */
+    for (c = 65; c <= 90; c++) {
+      uppercaseChars.push(String.fromCharCode(c));
+    }
+    console.log("uppercase array: " + uppercaseChars);
+
+    /* lowercase */
+    for(var i = 0; i < uppercaseChars.length; i++) {
+      lowercaseChars[i] = uppercaseChars[i].toLowerCase();
+    }
+    console.log("lowercase array: " + lowercaseChars);
+
+    /* numeric */
+    for (c = '0'; c <= '9'; c++) {
+      numericChars.push(c);
+    }
+    console.log("numeric array: " + numericChars);
+
+    /* special chars */
+    for (c = 32; c <= 47; c++) {
+      specialChars.push(String.fromCharCode(c));
+    }
+    for (c = 58; c <= 64; c++) {
+      specialChars.push(String.fromCharCode(c));
+    }
+    for (c = 91; c <= 96; c++) {
+      specialChars.push(String.fromCharCode(c));
+    }
+    for (c = 123; c <= 126; c++) {
+      specialChars.push(String.fromCharCode(c));
+    }
+    console.log("special array: " + specialChars);
+  }
+
