@@ -2,7 +2,7 @@
 var generateBtn = document.querySelector("#generate");
 
 // User entries
-var passwordLength = 0;
+var passwordLength = null;
 var charSetChoices = [null, null, null, null];
 var password = "Your Secure Password"; /* same as the default */
 
@@ -13,38 +13,48 @@ var numericChars = [];
 var specialChars = [];
 
 function getLength() {
+  var userCanceled = false;
   
-  /* show the user prompt to get the length input */
-  passwordLength = prompt("Please enter a length between 8 and 128 characters for your password ", "33");
+  do {
+    /* show the user prompt to get the length input */
+    passwordLength = prompt("Please enter a length between 8 and 128 characters for your password ", "33");
 
-  /* User pressed the Cancel button */
-  /* return false, no need to generate password */
-  if (passwordLength === null) {
-    return false;
-  }
+    /* User pressed the Cancel button */
+    /* set userCanceled to true, break out of this while */
+    /* and return false to NOT generate password */
+    if (passwordLength === null) {
+      userCanceled = true;
+    } else {
+      /* User entered some, and hit OK. Check if input is numeric. */
+      /* This check will not allow negative numbers either. */
+      console.log("passwordLength entered: " + passwordLength);
+      for (var i = 0; i < passwordLength.length; i++) {
+        if(passwordLength[i] < '0' || passwordLength[i] > '9') {
+          alert("Invalid length. Please enter a number between 8 and 128");
 
-  /* User entered something, and hit OK. Check if input is numeric. */
-  /* This check will not allow negative numbers either. */
-  for (var i = 0; i < passwordLength.length; i++) {
-    if(passwordLength[i] < '0' || passwordLength[i] > '9') {
-      alert("Invalid length. Please enter a number between 8 and 128");
-
-      /* reset the invalid value, we don't want to leave it there */
-      passwordLength = 0; 
-      return false;
-    }
-  }
+          /* reset the invalid value, we don't want to leave it there */
+          passwordLength = null; 
+          break;
+          //return false;
+        }
+      }
   
-  /* all numeric digits in input, now check if between 8 and 128 */
-  if (passwordLength < 8 || passwordLength > 128) {
-    alert("Invalid length. Please enter a number tween 8 and 128");
-    /* reset the invalid value */
-    passwordLength = 0; 
-    return false;
-  }
+      /* all numeric digits in input, now check if between 8 and 128 */
+      if (passwordLength !== null) {
+        if (passwordLength < 8 || passwordLength > 128) {
+          alert("Invalid length. Please enter a number tween 8 and 128");
+          /* reset the invalid value */
+          passwordLength = null; 
+          //return false;
+        }
+      }
+    } /* end else */
+  } while(!userCanceled && (passwordLength === null));
 
-  /* else, the input is valid, passwordLength has a valid number */
-  return true;
+  if (userCanceled)
+    return false;
+  else
+    return true; /* passwordLength is global, and has the value */
 }
 
 function getCharacterSetPreferences() {
