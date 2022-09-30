@@ -3,7 +3,7 @@ var generateBtn = document.querySelector("#generate");
 
 // User entries
 var passwordLength = null;
-var charSetChoices = [null, null, null, null];
+var useLower, useUpper, useNumeric, useSpecial;
 var password = "Your Secure Password"; /* same as the default */
 
 // Character set arrays
@@ -31,7 +31,6 @@ function getLength() {
     } else {
       /* User entered some input, and hit OK. Check if it is numeric. */
       /* This check will catch the negative sign, so only positive numbers allowed. */
-      console.log("passwordLength entered: " + passwordLength);
       for (var i = 0; i < passwordLength.length; i++) {
         if(passwordLength[i] < '0' || passwordLength[i] > '9') {
           alert("Invalid characters. Please enter a number between 8 and 128");
@@ -59,28 +58,26 @@ function getLength() {
     return true; /* passwordLength (global) has a valid length value, generate password */
 }
 
-function getCharacterSetPreferences() {
+function getCharSetPreferences() {
   /* get the user's choices: lower, upper, numeric, and/or special */
-  /* reset choice array first since this is global */
-  /* we don't want to add to the choices from last time */
-  charSetChoices = [];
+  /* and set the appropriate flags */
+
   alert("Please choose atleast one of the following sets of characters to use in your password");
   if (confirm("Use lowercase characters?")) {
-    charSetChoices.push("lower");
+    useLower = true;
   };
   if (confirm("Use uppercase characters?")) {
-    charSetChoices.push("upper");
+    useUpper = true;
   };
   if (confirm("Use numeric characters?")) {
-    charSetChoices.push("numeric");
+    useNumeric = true;
   };
   if (confirm("Use special characters?")) {
-    charSetChoices.push("special");
+    useSpecial = true;
   };
 
   /* Atleast one char set should be picked */
-  if(charSetChoices.length >= 1) {
-  //if (charSetChoices.indexOf(null) === -1) {
+  if (useLower || useUpper || useNumeric || useSpecial) {
     return true;
   } else {
     /* please choose atleast one character set */
@@ -89,7 +86,7 @@ function getCharacterSetPreferences() {
   }
 }
 
-function initializeCharacterSets() {
+function initializeCharSets() {
 
   /* Ideally, we want to do this only once for each character set */
   /* Setting up the four arrays with the characters in each char set */
@@ -140,40 +137,39 @@ function initializeCharacterSets() {
   }
 
   function generatePassword() {
-    //var password = [];
 
      /* keep this local, and reset it every time */
      /* add only the char sets that were picked by the user */
-    var masterCharacterSet = [];
+    var masterCharSet = [];
   
-    /* randomly generated index into the masterCharacterSet */
+    /* randomly generated index into the masterCharSet */
     var randomCharIndex;
 
-    /* create master array of chars from the user preferences */
-    /* look at each char set chosen */
-    /* push all those chars into the master array */
+    /* push all the chars from the char sets that the user prefers into a master array */
   
-    if(charSetChoices.indexOf("lower") !== -1) {
-      masterCharacterSet = masterCharacterSet.concat(lowercaseChars);
+    if(useLower) {
+      masterCharSet = masterCharSet.concat(lowercaseChars);
     }
-    if(charSetChoices.indexOf("upper") !== -1) {
-      masterCharacterSet = masterCharacterSet.concat(uppercaseChars);
+    if(useUpper) {  
+      masterCharSet = masterCharSet.concat(uppercaseChars);
     }
-    if(charSetChoices.indexOf("numeric") !== -1) {
-      masterCharacterSet = masterCharacterSet.concat(numericChars);
+    if (useNumeric) {
+      masterCharSet = masterCharSet.concat(numericChars);
     }
-    if(charSetChoices.indexOf("special") !== -1) {
-      masterCharacterSet = masterCharacterSet.concat(specialChars);
+    if (useSpecial) {
+      masterCharSet = masterCharSet.concat(specialChars);
     }
-    console.log("masterarray: " + masterCharacterSet);
+    console.log("masterarray: " + masterCharSet);
   
-    /* !!!!! there is a local password and global password !!!!!! */
-    password = ""; /* reset the string if it was previously generated */
+    /* remove the default password string since we are going to concat the 
+    random chars */
+    password = "";
+
+    /* get a random character from master array */
+    /* stick it in the password */
     for (var i = 0; i < passwordLength; i++) {
-      /* get a random character from master array */
-      /* stick it in the password */
-      randomCharIndex = Math.floor(Math.random() * masterCharacterSet.length);
-      password += masterCharacterSet[randomCharIndex];
+      randomCharIndex = Math.floor(Math.random() * masterCharSet.length);
+      password += masterCharSet[randomCharIndex];
     }
   
     console.log("Password: " + password);
@@ -185,12 +181,16 @@ function initializeCharacterSets() {
 function writePassword() {
 
   /* Initial: set up the character set arrays */
-  initializeCharacterSets();
+  initializeCharSets();
 
   /* reset earlier user choices if we've done this before */
   passwordLength = null;
-  charSetChoices = [null, null, null, null];
+  //charSetChoices = [null, null, null, null];
   password = "Your Secure Password"; /* same as the default */
+  useLower = false;
+  useUpper = false;
+  useNumeric = false;
+  useSpecial = false;
 
   /* Ask user for passwordLength */
   var isValidLength = getLength();
@@ -200,7 +200,7 @@ function writePassword() {
   default text to the password box. */
   if (isValidLength) {
     /* Ask for character sets to use */
-    var isValidCharSet = getCharacterSetPreferences();
+    var isValidCharSet = getCharSetPreferences();
     
     /* if valid length and char set choices received, generate password.
     Else, skip this and write default text to the password box */
